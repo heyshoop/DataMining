@@ -1,6 +1,8 @@
 import numpy as np
 dataset_filename = "affinity_dataset.txt"
 X = np.loadtxt(dataset_filename)
+n_samples,n_features = X.shape
+features = ["面包","牛奶","奶酪","苹果","香蕉"]
 # 第一部分
 #print(X[:5]) 打印前五行数据
 
@@ -14,6 +16,31 @@ X = np.loadtxt(dataset_filename)
 from collections import defaultdict
 valid_rules = defaultdict(int)#有效规则
 invalid_rules = defaultdict(int)#无效规则
-mum_occurances = defaultdict(int)
+num_occurences = defaultdict(int)#发生次数
+
+for sample in X:
+    for premise in range(n_features):#遍历
+        if sample[premise] == 0:continue#如果没有继续
+        num_occurences[premise] += 1#如果有发生次数加1
+        for conclusion in range(n_features):#再次遍历
+            if premise == conclusion:#排除自身
+                continue
+            if sample[conclusion] == 1:#发现又买了其他物品后
+                valid_rules[(premise,conclusion)] += 1#有效规则加1
+            else:
+                invalid_rules[(premise,conclusion)] += 1#无效规则加1
+support = valid_rules#支持情况
+confidence = defaultdict(float)
+for premise, conclusion in valid_rules.keys():
+    confidence[(premise, conclusion)] = valid_rules[(premise, conclusion)] / num_occurences[premise]
+for premise,conclusion in confidence:
+    premise_name = features[premise]
+    conclusion_name = features[conclusion]
+    print("Rule: 如果一个人买了 {0} 他们通常还会买 {1}".format(premise_name, conclusion_name))
+    print(" - 发生几率: {0:.3f}".format(confidence[(premise, conclusion)]))
+    print(" - 发生次数: {0}".format(support[(premise, conclusion)]))
+    print("")
+
+
 
 
