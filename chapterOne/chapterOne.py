@@ -1,3 +1,4 @@
+#亲和性分析
 import numpy as np
 dataset_filename = "affinity_dataset.txt"
 X = np.loadtxt(dataset_filename)
@@ -33,14 +34,32 @@ support = valid_rules#支持情况
 confidence = defaultdict(float)
 for premise, conclusion in valid_rules.keys():
     confidence[(premise, conclusion)] = valid_rules[(premise, conclusion)] / num_occurences[premise]
-for premise,conclusion in confidence:
+# for premise,conclusion in confidence:
+#     premise_name = features[premise]
+#     conclusion_name = features[conclusion]
+#     print("Rule: 如果一个人买了 {0} 他们通常还会买 {1}".format(premise_name, conclusion_name))
+#     print(" - 发生几率: {0:.3f}".format(confidence[(premise, conclusion)]))
+#     print(" - 发生次数: {0}".format(support[(premise, conclusion)]))
+#     print("")
+def print_rule(premise, conclusion, support, confidence, features):
     premise_name = features[premise]
     conclusion_name = features[conclusion]
     print("Rule: 如果一个人买了 {0} 他们通常还会买 {1}".format(premise_name, conclusion_name))
     print(" - 发生几率: {0:.3f}".format(confidence[(premise, conclusion)]))
     print(" - 发生次数: {0}".format(support[(premise, conclusion)]))
     print("")
+#排序取前五
+from operator import itemgetter
+sorted_support = sorted(support.items(),key=itemgetter(1),reverse = True)
+for index in range(5):
+    print("发生几率: #{0}".format(index+1))
+    (premise,conclusion) = sorted_support[index][0]
+    print_rule(premise,conclusion,support,confidence,features)
 
-
+sorted_confidence = sorted(confidence.items(),key=itemgetter(1),reverse =  True)
+for index in range(5):
+    print("支持数: #{0}".format(index+1))
+    (premise,conclusion) = sorted_support[index][0]
+    print_rule(premise,conclusion,support,confidence,features)
 
 
